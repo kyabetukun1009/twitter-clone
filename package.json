@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "emulators": "firebase emulators:start --only firestore,auth,storage,functions",
-    "dev": "next dev -p 80",
+    "dev": "next dev -p 3000",
     "dev:emulators": "concurrently npm:dev npm:emulators",
     "build": "next build",
     "start": "next start",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.2",
     "@heroicons/react": "^2.0.11",
+    "@supabase/supabase-js": "^2.115.0",
     "clsx": "^1.2.1",
     "firebase": "^9.9.4",
     "framer-motion": "^7.2.1",
