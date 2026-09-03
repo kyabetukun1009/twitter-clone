@@ -26,6 +26,11 @@ export function middleware(req: NextRequest): NextResponse {
 
   if (expected && cookie === expected) return NextResponse.next();
 
+  // /api/yajuter/* enforces the gate itself (401 JSON) so the
+  // Middleware lets it pass through untouched.
+  if (pathname.startsWith('/api/yajuter/') && pathname !== '/api/yajuter/gate')
+    return NextResponse.next();
+
   const url = req.nextUrl.clone();
   url.pathname = '/gate';
   return NextResponse.redirect(url);
