@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from './database';
 
 // Server-only client (service_role bypasses RLS).
 // Import this ONLY from API Routes / getServerSideProps, never from components.
-export function getServiceClient(): SupabaseClient {
+export function getServiceClient(): SupabaseClient<Database> {
   if (typeof window !== 'undefined')
     throw new Error('getServiceClient must only be called on the server');
 
@@ -13,7 +14,7 @@ export function getServiceClient(): SupabaseClient {
   if (!supabaseUrl || !serviceRoleKey)
     throw new Error('Supabase server config is not set or incomplete');
 
-  return createClient(supabaseUrl, serviceRoleKey, {
+  return createClient<Database>(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false }
   });
 }

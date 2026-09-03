@@ -6,6 +6,15 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): void {
+  if (req.method === 'DELETE') {
+    res.setHeader(
+      'Set-Cookie',
+      'yajuter_gate=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0'
+    );
+    res.status(200).json({ ok: true });
+    return;
+  }
+
   if (req.method !== 'POST') {
     res.status(405).json({ ok: false });
     return;

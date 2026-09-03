@@ -47,7 +47,7 @@ export default function Gate(): JSX.Element {
           autoComplete='current-password'
           placeholder='合言葉'
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e): void => setPassword(e.target.value)}
         />
         {error && <p className='mt-2 text-sm text-red-400'>{error}</p>}
         <button

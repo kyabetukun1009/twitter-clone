@@ -141,7 +141,7 @@ export const EMOTION_TAGS = [
   '諸行無常'
 ] as const;
 
-export type EmotionTag = (typeof EMOTION_TAGS)[number];
+export type EmotionTag = typeof EMOTION_TAGS[number];
 
 // yajuter stamps (must match the PHP version's stamp kinds).
 export const STAMPS = [
@@ -153,7 +153,7 @@ export const STAMPS = [
   'まずい'
 ] as const;
 
-export type Stamp = (typeof STAMPS)[number];
+export type Stamp = typeof STAMPS[number];
 
 export const MAX_POST_LEN = 810;
 export const PAGE_SIZE = 30;

@@ -22,7 +22,13 @@ export function middleware(req: NextRequest): NextResponse {
     return NextResponse.next();
 
   const expected = process.env.YAJUTER_GATE_PASSWORD;
-  const cookie = req.cookies.get(GATE_COOKIE);
+  // Next 12.2+: cookies.get() returns { name, value }; older Map shape
+  // returns the string directly. Handle both.
+  const raw = req.cookies.get(GATE_COOKIE) as unknown;
+  const cookie =
+    typeof raw === 'string'
+      ? raw
+      : (raw as { value?: string } | undefined)?.value;
 
   if (expected && cookie === expected) return NextResponse.next();
 

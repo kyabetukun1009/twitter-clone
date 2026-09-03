@@ -1,53 +1,61 @@
-import { AnimatePresence } from 'framer-motion';
-import { where, orderBy } from 'firebase/firestore';
-import { useWindow } from '@lib/context/window-context';
-import { useInfiniteScroll } from '@lib/hooks/useInfiniteScroll';
-import { tweetsCollection } from '@lib/firebase/collections';
-import { HomeLayout, ProtectedLayout } from '@components/layout/common-layout';
+import { useAuth } from '@lib/context/auth-context';
+import { useYajuterTimeline } from '@lib/yajuter/use-timeline';
+import { ProtectedLayout } from '@components/layout/common-layout';
 import { MainLayout } from '@components/layout/main-layout';
+import { Aside } from '@components/aside/aside';
 import { SEO } from '@components/common/seo';
 import { MainContainer } from '@components/home/main-container';
-import { Input } from '@components/input/input';
-import { UpdateUsername } from '@components/home/update-username';
 import { MainHeader } from '@components/home/main-header';
-import { Tweet } from '@components/tweet/tweet';
 import { Loading } from '@components/ui/loading';
-import { Error } from '@components/ui/error';
+import { YajuterTweet } from '@components/yajuter/yajuter-tweet';
+import { YajuterComposer } from '@components/yajuter/yajuter-composer';
+import { YajuterAside } from '@components/yajuter/yajuter-aside';
 import type { ReactElement, ReactNode } from 'react';
 
 export default function Home(): JSX.Element {
-  const { isMobile } = useWindow();
-
-  const { data, loading, LoadMore } = useInfiniteScroll(
-    tweetsCollection,
-    [where('parent', '==', null), orderBy('createdAt', 'desc')],
-    { includeUser: true, allowNull: true, preserve: true }
-  );
+  const { user } = useAuth();
+  const {
+    posts,
+    loading,
+    loadingMore,
+    hasMore,
+    sentinelRef,
+    patchPost,
+    removePost,
+    prependPost
+  } = useYajuterTimeline();
 
   return (
     <MainContainer>
-      <SEO title='Home / Twitter' />
-      <MainHeader
-        useMobileSidebar
-        title='Home'
-        className='flex items-center justify-between'
-      >
-        <UpdateUsername />
-      </MainHeader>
-      {!isMobile && <Input />}
+      <SEO title='ホーム / yajuter' description='推しかつ記録タイムライン' />
+      <MainHeader title='ホーム' />
+      {user && <YajuterComposer owner={user} onPosted={prependPost} />}
       <section className='mt-0.5 xs:mt-0'>
-        {loading ? (
+        {loading || !user ? (
           <Loading className='mt-5' />
-        ) : !data ? (
-          <Error message='Something went wrong' />
+        ) : posts.length === 0 ? (
+          <p className='px-4 py-8 text-center text-light-secondary dark:text-dark-secondary'>
+            まだ投稿がないゾ…おっそうだな（適当）
+          </p>
         ) : (
           <>
-            <AnimatePresence mode='popLayout'>
-              {data.map((tweet) => (
-                <Tweet {...tweet} key={tweet.id} />
-              ))}
-            </AnimatePresence>
-            <LoadMore />
+            {posts.map((post) => (
+              <YajuterTweet
+                key={post.id}
+                post={post}
+                owner={user}
+                onPatch={patchPost}
+                onRemove={removePost}
+              />
+            ))}
+            <div ref={sentinelRef}>
+              {loadingMore && <Loading className='mt-5' />}
+              {!hasMore && (
+                <p className='py-6 text-center text-sm text-light-secondary dark:text-dark-secondary'>
+                  以上だゾ（終わり！閉廷！）
+                </p>
+              )}
+            </div>
           </>
         )}
       </section>
@@ -58,7 +66,10 @@ export default function Home(): JSX.Element {
 Home.getLayout = (page: ReactElement): ReactNode => (
   <ProtectedLayout>
     <MainLayout>
-      <HomeLayout>{page}</HomeLayout>
+      {page}
+      <Aside>
+        <YajuterAside />
+      </Aside>
     </MainLayout>
   </ProtectedLayout>
 );
