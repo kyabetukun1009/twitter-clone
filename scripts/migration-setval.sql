@@ -1,0 +1,12 @@
+SELECT setval(pg_get_serial_sequence('users', 'id'), COALESCE((SELECT MAX(id) FROM users), 1));
+SELECT setval(pg_get_serial_sequence('posts', 'id'), COALESCE((SELECT MAX(id) FROM posts), 1));
+SELECT setval(pg_get_serial_sequence('pilgrimage_spots', 'id'), COALESCE((SELECT MAX(id) FROM pilgrimage_spots), 1));
+SELECT setval(pg_get_serial_sequence('pilgrimage_logs', 'id'), COALESCE((SELECT MAX(id) FROM pilgrimage_logs), 1));
+SELECT setval(pg_get_serial_sequence('anniversaries', 'id'), COALESCE((SELECT MAX(id) FROM anniversaries), 1));
+SELECT setval(pg_get_serial_sequence('events', 'id'), COALESCE((SELECT MAX(id) FROM events), 1));
+SELECT setval(pg_get_serial_sequence('quotes', 'id'), COALESCE((SELECT MAX(id) FROM quotes), 1));
+SELECT setval(pg_get_serial_sequence('badges', 'id'), COALESCE((SELECT MAX(id) FROM badges), 1));
+SELECT setval(pg_get_serial_sequence('badge_unlocks', 'id'), COALESCE((SELECT MAX(id) FROM badge_unlocks), 1));
+SELECT setval(pg_get_serial_sequence('search_history', 'id'), COALESCE((SELECT MAX(id) FROM search_history), 1));
+SELECT setval(pg_get_serial_sequence('post_stamps', 'id'), COALESCE((SELECT MAX(id) FROM post_stamps), 1));
+SELECT setval(pg_get_serial_sequence('notices', 'id'), COALESCE((SELECT MAX(id) FROM notices), 1));
