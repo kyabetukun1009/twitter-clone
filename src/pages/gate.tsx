@@ -38,7 +38,15 @@ export default function Gate(): JSX.Element {
         className='w-full max-w-sm rounded-2xl border border-gray-800 bg-[#0f1419] p-6'
         onSubmit={onSubmit}
       >
-        <h1 className='text-xl font-bold text-white'>yajuter − 合言葉</h1>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className='mx-auto h-16 w-16 rounded-full'
+          src='/images/yajuter-emblem.png'
+          alt='yajuter'
+        />
+        <h1 className='mt-2 text-center text-xl font-bold text-white'>
+          yajuter − 合言葉
+        </h1>
         <p className='mt-1 text-sm text-gray-400'>
           推し活記録の入口だゾ。合言葉を入れてくれ。
         </p>

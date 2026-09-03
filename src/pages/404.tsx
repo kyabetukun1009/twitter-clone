@@ -1,20 +1,29 @@
-import Error from 'next/error';
-import { useTheme } from '@lib/context/theme-context';
+import Link from 'next/link';
 import { SEO } from '@components/common/seo';
 
 export default function NotFound(): JSX.Element {
-  const { theme } = useTheme();
-
-  const isDarkMode = ['dim', 'dark'].includes(theme);
-
   return (
-    <>
+    <main className='mx-auto flex min-h-screen w-full max-w-xl flex-col items-center justify-center gap-4 px-4 text-center'>
       <SEO
-        title='Page not found / Twitter'
-        description='Sorry we couldn’t find the page you were looking for.'
-        image='/404.png'
+        title='見つからない / yajuter'
+        description='そのページは存在しないゾ'
+        image='/images/ogp.png'
       />
-      <Error statusCode={404} withDarkMode={isDarkMode} />
-    </>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        className='w-full max-w-md rounded-2xl border border-light-border dark:border-dark-border'
+        src='/images/art-404.png'
+        alt='空っぽの球場'
+      />
+      <h1 className='text-2xl font-extrabold'>ここには何もないゾ…</h1>
+      <p className='text-light-secondary dark:text-dark-secondary'>
+        終わり！閉廷！以上！皆解散！
+      </p>
+      <Link href='/home'>
+        <a className='rounded-full bg-main-accent px-6 py-2 font-bold text-white transition hover:brightness-110'>
+          ホームに戻る
+        </a>
+      </Link>
+    </main>
   );
 }

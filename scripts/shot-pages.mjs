@@ -7,7 +7,8 @@ const PASSWORD = process.argv[3] || 'dev-gate-810';
 const PAGES = [
   { name: 'profile', path: '/user/watashi', ready: 'text=件の投稿' },
   { name: 'bookmarks', path: '/bookmarks', ready: 'section' },
-  { name: 'thread', path: '/tweet/114595', ready: 'article' }
+  { name: 'thread', path: '/tweet/114595', ready: 'article' },
+  { name: 'notfound', path: '/no-such-page', ready: 'text=何もないゾ' }
 ];
 const WIDTHS = [
   { name: 'pc', width: 1280, height: 900 },

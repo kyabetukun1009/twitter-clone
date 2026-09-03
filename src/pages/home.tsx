@@ -34,9 +34,17 @@ export default function Home(): JSX.Element {
         {loading || !user ? (
           <Loading className='mt-5' />
         ) : posts.length === 0 ? (
-          <p className='px-4 py-8 text-center text-light-secondary dark:text-dark-secondary'>
-            まだ投稿がないゾ…おっそうだな（適当）
-          </p>
+          <div className='flex flex-col items-center gap-2 px-4 py-8 text-center'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className='w-full max-w-xs rounded-2xl border border-light-border dark:border-dark-border'
+              src='/images/empty-posts.png'
+              alt='空っぽの箱'
+            />
+            <p className='text-light-secondary dark:text-dark-secondary'>
+              まだ投稿がないゾ…おっそうだな（適当）
+            </p>
+          </div>
         ) : (
           <>
             {posts.map((post) => (

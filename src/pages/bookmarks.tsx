@@ -113,7 +113,7 @@ export default function Bookmarks(): JSX.Element {
           <StatsEmpty
             title='☆をつけて保存しよう'
             description='いいゾ〜これと思った投稿に☆をつけると、ここに集まるよ。'
-            imageData={{ src: '/assets/no-bookmarks.png', alt: 'No bookmarks' }}
+            imageData={{ src: '/images/empty-posts.png', alt: 'No bookmarks' }}
           />
         ) : (
           <>
