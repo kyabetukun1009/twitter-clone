@@ -1,21 +1,19 @@
-import { useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
-import { AnimatePresence } from 'framer-motion';
-import { doc, query, where, orderBy } from 'firebase/firestore';
-import { tweetsCollection } from '@lib/firebase/collections';
-import { useCollection } from '@lib/hooks/useCollection';
-import { useDocument } from '@lib/hooks/useDocument';
-import { isPlural } from '@lib/utils';
-import { HomeLayout, ProtectedLayout } from '@components/layout/common-layout';
+import { useAuth } from '@lib/context/auth-context';
+import { fetchThread } from '@lib/yajuter/api';
+import { ProtectedLayout } from '@components/layout/common-layout';
 import { MainLayout } from '@components/layout/main-layout';
+import { Aside } from '@components/aside/aside';
 import { MainContainer } from '@components/home/main-container';
 import { MainHeader } from '@components/home/main-header';
-import { Tweet } from '@components/tweet/tweet';
-import { ViewTweet } from '@components/view/view-tweet';
 import { SEO } from '@components/common/seo';
 import { Loading } from '@components/ui/loading';
 import { Error } from '@components/ui/error';
-import { ViewParentTweet } from '@components/view/view-parent-tweet';
+import { YajuterTweet } from '@components/yajuter/yajuter-tweet';
+import { YajuterComposer } from '@components/yajuter/yajuter-composer';
+import { YajuterAside } from '@components/yajuter/yajuter-aside';
+import type { YPost, YThread } from '@lib/yajuter/api';
 import type { ReactElement, ReactNode } from 'react';
 
 export default function TweetId(): JSX.Element {
@@ -23,69 +21,128 @@ export default function TweetId(): JSX.Element {
     query: { id },
     back
   } = useRouter();
+  const { user } = useAuth();
 
-  const { data: tweetData, loading: tweetLoading } = useDocument(
-    doc(tweetsCollection, id as string),
-    { includeUser: true, allowNull: true }
-  );
+  const [thread, setThread] = useState<YThread | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [missing, setMissing] = useState(false);
 
-  const viewTweetRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+    setLoading(true);
+    setMissing(false);
+    fetchThread(Number(id))
+      .then((data) => {
+        if (!cancelled) setThread(data);
+      })
+      .catch(() => {
+        if (!cancelled) setMissing(true);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
 
-  const { data: repliesData, loading: repliesLoading } = useCollection(
-    query(
-      tweetsCollection,
-      where('parent.id', '==', id),
-      orderBy('createdAt', 'desc')
-    ),
-    { includeUser: true, allowNull: true }
-  );
+  const patchIn = useCallback((postId: number, patch: Partial<YPost>): void => {
+    setThread((current) => {
+      if (!current) return current;
+      const apply = (p: YPost): YPost =>
+        p.id === postId ? { ...p, ...patch } : p;
+      return {
+        post: apply(current.post),
+        parents: current.parents.map(apply),
+        replies: current.replies.map(apply)
+      };
+    });
+  }, []);
 
-  const { text, images } = tweetData ?? {};
+  const removeFrom = useCallback((postId: number): void => {
+    setThread((current) => {
+      if (!current) return current;
+      if (current.post.id === postId) {
+        setMissing(true);
+        return current;
+      }
+      return {
+        ...current,
+        replies: current.replies.filter((p) => p.id !== postId)
+      };
+    });
+  }, []);
 
-  const imagesLength = images?.length ?? 0;
-  const parentId = tweetData?.parent?.id;
+  const appendReply = useCallback((post: YPost): void => {
+    setThread((current) => {
+      if (!current) return current;
+      return {
+        ...current,
+        post: {
+          ...current.post,
+          reply_count: current.post.reply_count + 1
+        },
+        replies: [...current.replies, post]
+      };
+    });
+  }, []);
 
-  const pageTitle = tweetData
-    ? `${tweetData.user.name} on Twitter: "${text ?? ''}${
-        images ? ` (${imagesLength} image${isPlural(imagesLength)})` : ''
-      }" / Twitter`
+  const main = thread?.post;
+  const pageTitle = main
+    ? `${user?.name ?? 'yajuter'}: 「${main.content.slice(0, 40)}」 / yajuter`
     : null;
 
   return (
-    <MainContainer className='!pb-[1280px]'>
+    <MainContainer>
       <MainHeader
         useActionButton
-        title={parentId ? 'Thread' : 'Tweet'}
+        title={thread && thread.parents.length ? 'スレッド' : 'つぶやき'}
+        tip='戻る'
         action={back}
       />
       <section>
-        {tweetLoading ? (
+        {loading || !user ? (
           <Loading className='mt-5' />
-        ) : !tweetData ? (
+        ) : missing || !thread || !main ? (
           <>
-            <SEO title='Tweet not found / Twitter' />
-            <Error message='Tweet not found' />
+            <SEO title='見つからない / yajuter' />
+            <Error message='これもうわかんねぇな（投稿が見つからない）' />
           </>
         ) : (
           <>
             {pageTitle && <SEO title={pageTitle} />}
-            {parentId && (
-              <ViewParentTweet
-                parentId={parentId}
-                viewTweetRef={viewTweetRef}
+            {thread.parents.map((parent) => (
+              <YajuterTweet
+                key={parent.id}
+                post={parent}
+                owner={user}
+                onPatch={patchIn}
+                onRemove={removeFrom}
               />
-            )}
-            <ViewTweet viewTweetRef={viewTweetRef} {...tweetData} />
-            {tweetData &&
-              (repliesLoading ? (
-                <Loading className='mt-5' />
-              ) : (
-                <AnimatePresence mode='popLayout'>
-                  {repliesData?.map((tweet) => (
-                    <Tweet {...tweet} key={tweet.id} />
-                  ))}
-                </AnimatePresence>
-              ))}
+            ))}
+            <div className='border-b-4 border-light-border dark:border-dark-border'>
+              <YajuterTweet
+                post={main}
+                owner={user}
+                onPatch={patchIn}
+                onRemove={removeFrom}
+              />
+            </div>
+            <YajuterComposer
+              owner={user}
+              replyTo={main.id}
+              onPosted={appendReply}
+            />
+            {thread.replies.map((reply) => (
+              <YajuterTweet
+                key={reply.id}
+                post={reply}
+                owner={user}
+                onPatch={patchIn}
+                onRemove={removeFrom}
+              />
+            ))}
           </>
         )}
       </section>
@@ -96,7 +153,10 @@ export default function TweetId(): JSX.Element {
 TweetId.getLayout = (page: ReactElement): ReactNode => (
   <ProtectedLayout>
     <MainLayout>
-      <HomeLayout>{page}</HomeLayout>
+      {page}
+      <Aside>
+        <YajuterAside />
+      </Aside>
     </MainLayout>
   </ProtectedLayout>
 );

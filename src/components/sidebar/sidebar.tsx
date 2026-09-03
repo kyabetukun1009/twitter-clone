@@ -3,11 +3,10 @@ import { useAuth } from '@lib/context/auth-context';
 import { useWindow } from '@lib/context/window-context';
 import { useModal } from '@lib/hooks/useModal';
 import { Modal } from '@components/modal/modal';
-import { Input } from '@components/input/input';
 import { CustomIcon } from '@components/ui/custom-icon';
 import { Button } from '@components/ui/button';
+import { YajuterComposer } from '@components/yajuter/yajuter-composer';
 import { SidebarLink } from './sidebar-link';
-import { MoreSettings } from './more-settings';
 import { SidebarProfile } from './sidebar-profile';
 import type { IconName } from '@components/ui/hero-icon';
 
@@ -65,8 +64,6 @@ export function Sidebar(): JSX.Element {
 
   const { open, openModal, closeModal } = useModal();
 
-  const username = user?.username as string;
-
   return (
     <header
       id='sidebar'
@@ -79,7 +76,15 @@ export function Sidebar(): JSX.Element {
         open={open}
         closeModal={closeModal}
       >
-        <Input modal closeModal={closeModal} />
+        {user && (
+          <YajuterComposer
+            owner={user}
+            onPosted={(): void => {
+              closeModal();
+              window.location.reload();
+            }}
+          />
+        )}
       </Modal>
       <div
         className='fixed bottom-0 z-10 flex w-full flex-col justify-between border-t border-light-border 
@@ -102,13 +107,7 @@ export function Sidebar(): JSX.Element {
             {navLinks.map(({ ...linkData }) => (
               <SidebarLink {...linkData} key={linkData.href} />
             ))}
-            <SidebarLink
-              href={`/user/${username}`}
-              username={username}
-              linkName='Profile'
-              iconName='UserIcon'
-            />
-            {!isMobile && <MoreSettings />}
+            {/* TODO: プロフィール画面・表示設定は移植中のため一時的に非表示 */}
           </nav>
           <Button
             className='accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white

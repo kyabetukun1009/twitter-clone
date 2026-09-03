@@ -7,11 +7,13 @@ import type { User } from '@lib/types/user';
 
 type YajuterComposerProps = {
   owner: User;
+  replyTo?: number;
   onPosted: (post: YPost) => void;
 };
 
 export function YajuterComposer({
   owner,
+  replyTo,
   onPosted
 }: YajuterComposerProps): JSX.Element {
   const [content, setContent] = useState('');
@@ -30,7 +32,8 @@ export function YajuterComposer({
     try {
       const { post } = await createPost({
         content,
-        emotion_tag: emotionTag || undefined
+        emotion_tag: emotionTag || undefined,
+        reply_to: replyTo
       });
       onPosted({ ...post, reply_count: 0 });
       setContent('');
@@ -56,7 +59,9 @@ export function YajuterComposer({
         <div className='flex min-w-0 flex-col gap-2'>
           <textarea
             className='min-h-[80px] w-full resize-y bg-transparent text-xl outline-none placeholder:text-light-secondary dark:placeholder:text-dark-secondary'
-            placeholder='いまどうしてる？（迫真）'
+            placeholder={
+              replyTo ? 'つづきをどうぞ（返信）' : 'いまどうしてる？（迫真）'
+            }
             value={content}
             onChange={(e): void => setContent(e.target.value)}
           />

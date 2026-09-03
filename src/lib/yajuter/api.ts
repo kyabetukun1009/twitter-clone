@@ -41,6 +41,7 @@ export function fetchTimeline(
 export function createPost(input: {
   content: string;
   emotion_tag?: string;
+  reply_to?: number;
 }): Promise<{ post: PostRow }> {
   return api('/api/yajuter/posts', {
     method: 'POST',
@@ -74,6 +75,24 @@ export function fetchAnniversaries(): Promise<{
   anniversaries: AnniversaryRow[];
 }> {
   return api('/api/yajuter/anniversaries');
+}
+
+export type YThread = {
+  post: YPost;
+  parents: YPost[];
+  replies: YPost[];
+};
+
+export function fetchThread(id: number): Promise<YThread> {
+  return api(`/api/yajuter/posts/${id}`);
+}
+
+export function fetchBookmarks(): Promise<{ posts: YPost[]; count: number }> {
+  return api('/api/yajuter/bookmarks');
+}
+
+export function clearBookmarks(): Promise<{ cleared: number }> {
+  return api('/api/yajuter/bookmarks', { method: 'DELETE' });
 }
 
 export function fetchRandomQuote(): Promise<{ quote: QuoteRow | null }> {

@@ -1,4 +1,5 @@
 import { getServiceClient } from '@lib/supabase/server';
+import { withReplyCounts } from '@lib/supabase/queries';
 import { PAGE_SIZE } from '@lib/supabase/tables';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -50,25 +51,7 @@ export default async function handler(
   }
 
   // Reply counts for the returned posts (single extra query).
-  const rows = data ?? [];
-  const ids = rows.map((p) => p.id);
-  const replyCounts: Record<number, number> = {};
-  if (ids.length) {
-    const { data: replyRows } = await sb
-      .from('posts')
-      .select('reply_to')
-      .in('reply_to', ids)
-      .is('deleted_at', null);
-    for (const r of replyRows ?? []) {
-      if (r.reply_to == null) continue;
-      replyCounts[r.reply_to] = (replyCounts[r.reply_to] ?? 0) + 1;
-    }
-  }
-
-  const posts = rows.map((p) => ({
-    ...p,
-    reply_count: replyCounts[p.id] ?? 0
-  }));
+  const posts = await withReplyCounts(sb, data ?? []);
 
   res.status(200).json({ ok: true, count: posts.length, posts });
 }
