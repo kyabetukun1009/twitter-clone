@@ -32,9 +32,14 @@ export function AuthContextProvider({
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
-  const { replace } = useRouter();
+  const { replace, pathname } = useRouter();
 
   useEffect(() => {
+    // /gate has no cookie yet by definition; skip the doomed /me call.
+    if (pathname === '/gate') {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     fetchMe()
       .then(({ user: owner }) => {
@@ -69,7 +74,7 @@ export function AuthContextProvider({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [pathname]);
 
   const signInWithGoogle = async (): Promise<void> => {
     await replace('/gate');

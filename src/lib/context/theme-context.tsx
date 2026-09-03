@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useState, useEffect, createContext, useContext } from 'react';
-import { updateUserTheme } from '@lib/firebase/utils';
 import { useAuth } from './auth-context';
 import type { ReactNode, ChangeEvent } from 'react';
 import type { Theme, Accent } from '@lib/types/theme';
@@ -54,7 +53,7 @@ export function ThemeContextProvider({
   }, [userId, userAccent]);
 
   useEffect(() => {
-    const flipTheme = (theme: Theme): NodeJS.Timeout | undefined => {
+    const flipTheme = (theme: Theme): void => {
       const root = document.documentElement;
       const targetTheme = theme === 'dim' ? 'dark' : theme;
 
@@ -73,34 +72,24 @@ export function ThemeContextProvider({
         `var(--${theme}-sidebar-background)`
       );
 
-      if (user) {
-        localStorage.setItem('theme', theme);
-        return setTimeout(() => void updateUserTheme(user.id, { theme }), 500);
-      }
-
-      return undefined;
+      // TODO: persist to /api/yajuter/settings when the settings API lands.
+      if (user) localStorage.setItem('theme', theme);
     };
 
-    const timeoutId = flipTheme(theme);
-    return () => clearTimeout(timeoutId);
+    flipTheme(theme);
   }, [userId, theme]);
 
   useEffect(() => {
-    const flipAccent = (accent: Accent): NodeJS.Timeout | undefined => {
+    const flipAccent = (accent: Accent): void => {
       const root = document.documentElement;
 
       root.style.setProperty('--main-accent', `var(--accent-${accent})`);
 
-      if (user) {
-        localStorage.setItem('accent', accent);
-        return setTimeout(() => void updateUserTheme(user.id, { accent }), 500);
-      }
-
-      return undefined;
+      // TODO: persist to /api/yajuter/settings when the settings API lands.
+      if (user) localStorage.setItem('accent', accent);
     };
 
-    const timeoutId = flipAccent(accent);
-    return () => clearTimeout(timeoutId);
+    flipAccent(accent);
   }, [userId, accent]);
 
   const changeTheme = ({

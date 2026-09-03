@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import { SEO } from '@components/common/seo';
 
 export default function Gate(): JSX.Element {
-  const router = useRouter();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -22,7 +20,10 @@ export default function Gate(): JSX.Element {
         setError('まずいですよ！（合言葉が違う）');
         return;
       }
-      await router.replace('/home');
+      // Full reload so AuthContextProvider remounts with the fresh cookie.
+      // (router.replace would reuse the already-mounted provider, which
+      // fetched /me cookieless on /gate and would never retry.)
+      window.location.assign('/home');
     } catch {
       setError('これもうわかんねぇな（通信失敗）');
     } finally {
