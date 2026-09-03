@@ -21,10 +21,17 @@ export default async function handler(
     content?: unknown;
     emotion_tag?: unknown;
     reply_to?: unknown;
+    image_path?: unknown;
   };
   const rawContent = typeof body.content === 'string' ? body.content : '';
   const rawTag = typeof body.emotion_tag === 'string' ? body.emotion_tag : '';
   const rawReplyTo = typeof body.reply_to === 'number' ? body.reply_to : null;
+  const rawImage =
+    typeof body.image_path === 'string' &&
+    body.image_path &&
+    !body.image_path.includes('..')
+      ? body.image_path
+      : null;
 
   const text = rawContent.trim();
   if (!text || Array.from(text).length > MAX_POST_LEN) {
@@ -45,7 +52,8 @@ export default async function handler(
     user_id: OWNER_USER_ID,
     content: text,
     emotion_tag: tagWithParens,
-    reply_to: rawReplyTo ?? null
+    reply_to: rawReplyTo ?? null,
+    image_path: rawImage
   };
   const { data, error } = await sb
     .from('posts')

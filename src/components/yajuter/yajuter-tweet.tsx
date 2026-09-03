@@ -2,7 +2,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import cn from 'clsx';
 import { fromISO } from '@lib/supabase/timestamp';
-import { likePost, toggleBookmark, deletePost } from '@lib/yajuter/api';
+import {
+  likePost,
+  toggleBookmark,
+  deletePost,
+  imageUrl
+} from '@lib/yajuter/api';
 import { UserAvatar } from '@components/user/user-avatar';
 import { UserName } from '@components/user/user-name';
 import { TweetDate } from '@components/tweet/tweet-date';
@@ -97,6 +102,22 @@ export function YajuterTweet({
             </span>
           )}
           <p className='whitespace-pre-line break-words'>{post.content}</p>
+          {post.image_path && (
+            <a
+              className='mt-2 block overflow-hidden rounded-2xl border border-light-border dark:border-dark-border'
+              href={imageUrl(post.image_path)}
+              target='_blank'
+              rel='noreferrer'
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className='max-h-96 w-full object-cover'
+                src={imageUrl(post.image_path)}
+                alt='投稿画像'
+                loading='lazy'
+              />
+            </a>
+          )}
           {post.edited_at && (
             <p className='mt-1 text-xs text-light-secondary dark:text-dark-secondary'>
               ✏️ 編集済み

@@ -42,6 +42,7 @@ export function createPost(input: {
   content: string;
   emotion_tag?: string;
   reply_to?: number;
+  image_path?: string;
 }): Promise<{ post: PostRow }> {
   return api('/api/yajuter/posts', {
     method: 'POST',
@@ -71,6 +72,23 @@ export function deletePost(post_id: number): Promise<{ id: number }> {
   return api(`/api/yajuter/posts/${post_id}`, { method: 'DELETE' });
 }
 
+export async function uploadImage(file: File): Promise<{ path: string }> {
+  const form = new FormData();
+  form.append('image', file);
+  const res = await fetch('/api/yajuter/upload', {
+    method: 'POST',
+    body: form
+  });
+  if (res.status === 401) throw new Error('unauthorized');
+  const body = (await res.json()) as { ok: boolean; path?: string };
+  if (!body.ok || !body.path) throw new Error('upload failed');
+  return { path: body.path };
+}
+
+export function imageUrl(path: string): string {
+  return `/api/yajuter/image?path=${encodeURIComponent(path)}`;
+}
+
 export function fetchAnniversaries(): Promise<{
   anniversaries: AnniversaryRow[];
 }> {
@@ -93,6 +111,15 @@ export function fetchBookmarks(): Promise<{ posts: YPost[]; count: number }> {
 
 export function clearBookmarks(): Promise<{ cleared: number }> {
   return api('/api/yajuter/bookmarks', { method: 'DELETE' });
+}
+
+export type ProfileTab = 'posts' | 'media' | 'liked';
+
+export function fetchProfile(tab: ProfileTab): Promise<{
+  posts: YPost[];
+  stats: { totalTweets: number; totalPhotos: number };
+}> {
+  return api(`/api/yajuter/profile?tab=${tab}`);
 }
 
 export function fetchRandomQuote(): Promise<{ quote: QuoteRow | null }> {

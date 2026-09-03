@@ -21,37 +21,37 @@ export type NavLink = {
 const navLinks: Readonly<NavLink[]> = [
   {
     href: '/home',
-    linkName: 'Home',
+    linkName: 'ホーム',
     iconName: 'HomeIcon'
   },
   {
     href: '/explore',
-    linkName: 'Explore',
+    linkName: '話題を検索',
     iconName: 'HashtagIcon',
     disabled: true,
     canBeHidden: true
   },
   {
     href: '/notifications',
-    linkName: 'Notifications',
+    linkName: '通知',
     iconName: 'BellIcon',
     disabled: true
   },
   {
     href: '/messages',
-    linkName: 'Messages',
+    linkName: 'メッセージ',
     iconName: 'EnvelopeIcon',
     disabled: true
   },
   {
     href: '/bookmarks',
-    linkName: 'Bookmarks',
+    linkName: 'お気に入り',
     iconName: 'BookmarkIcon',
     canBeHidden: true
   },
   {
     href: '/lists',
-    linkName: 'Lists',
+    linkName: 'リスト',
     iconName: 'Bars3BottomLeftIcon',
     disabled: true,
     canBeHidden: true
@@ -63,6 +63,8 @@ export function Sidebar(): JSX.Element {
   const { isMobile } = useWindow();
 
   const { open, openModal, closeModal } = useModal();
+
+  const username = user?.username as string;
 
   return (
     <header
@@ -107,7 +109,13 @@ export function Sidebar(): JSX.Element {
             {navLinks.map(({ ...linkData }) => (
               <SidebarLink {...linkData} key={linkData.href} />
             ))}
-            {/* TODO: プロフィール画面・表示設定は移植中のため一時的に非表示 */}
+            {/* TODO: 表示設定モーダルは移植中のため一時的に非表示 */}
+            <SidebarLink
+              href={`/user/${username}`}
+              username={username}
+              linkName='プロフィール'
+              iconName='UserIcon'
+            />
           </nav>
           <Button
             className='accent-tab absolute right-4 -translate-y-[72px] bg-main-accent text-lg font-bold text-white
@@ -119,7 +127,7 @@ export function Sidebar(): JSX.Element {
               className='block h-6 w-6 xl:hidden'
               iconName='FeatherIcon'
             />
-            <p className='hidden xl:block'>Tweet</p>
+            <p className='hidden xl:block'>投稿する</p>
           </Button>
         </section>
         {!isMobile && <SidebarProfile />}

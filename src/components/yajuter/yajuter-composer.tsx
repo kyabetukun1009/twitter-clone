@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { EMOTION_TAGS, MAX_POST_LEN } from '@lib/supabase/tables';
-import { createPost } from '@lib/yajuter/api';
+import { createPost, uploadImage } from '@lib/yajuter/api';
 import { UserAvatar } from '@components/user/user-avatar';
+import { HeroIcon } from '@components/ui/hero-icon';
 import type { YPost } from '@lib/yajuter/api';
 import type { User } from '@lib/types/user';
 
@@ -20,9 +21,30 @@ export function YajuterComposer({
   const [emotionTag, setEmotionTag] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const len = Array.from(content).length;
   const over = len === 0 || len > MAX_POST_LEN;
+
+  function pickImage(e: React.ChangeEvent<HTMLInputElement>): void {
+    const file = e.target.files?.[0] ?? null;
+    setPreviewUrl((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return file ? URL.createObjectURL(file) : null;
+    });
+    setImageFile(file);
+  }
+
+  function clearImage(): void {
+    setPreviewUrl((old) => {
+      if (old) URL.revokeObjectURL(old);
+      return null;
+    });
+    setImageFile(null);
+    if (fileRef.current) fileRef.current.value = '';
+  }
 
   async function onSubmit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
@@ -30,14 +52,21 @@ export function YajuterComposer({
     setBusy(true);
     setError('');
     try {
+      let image_path: string | undefined;
+      if (imageFile) {
+        const uploaded = await uploadImage(imageFile);
+        image_path = uploaded.path;
+      }
       const { post } = await createPost({
         content,
         emotion_tag: emotionTag || undefined,
-        reply_to: replyTo
+        reply_to: replyTo,
+        image_path
       });
       onPosted({ ...post, reply_count: 0 });
       setContent('');
       setEmotionTag('');
+      clearImage();
     } catch {
       setError('まずいですよ！（投稿に失敗）');
     } finally {
@@ -88,8 +117,42 @@ export function YajuterComposer({
               {len} / {MAX_POST_LEN}
             </span>
           </div>
+          {previewUrl && (
+            <div className='relative w-fit'>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className='max-h-48 rounded-2xl border border-light-border dark:border-dark-border'
+                src={previewUrl}
+                alt='添付プレビュー'
+              />
+              <button
+                className='absolute right-2 top-2 rounded-full bg-black/60 px-2 py-1 text-xs font-bold text-white'
+                type='button'
+                onClick={clearImage}
+              >
+                ✕
+              </button>
+            </div>
+          )}
           {error && <p className='text-sm text-accent-red'>{error}</p>}
-          <div className='flex justify-end'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <input
+                ref={fileRef}
+                className='hidden'
+                type='file'
+                accept='image/jpeg,image/png,image/gif,image/webp'
+                onChange={pickImage}
+              />
+              <button
+                className='grid h-9 w-9 place-items-center rounded-full text-main-accent transition hover:bg-main-accent/10'
+                type='button'
+                title='画像をつける（5MBまで）'
+                onClick={(): void => fileRef.current?.click()}
+              >
+                <HeroIcon className='h-5 w-5' iconName='PhotoIcon' />
+              </button>
+            </div>
             <button
               className='rounded-full bg-main-accent px-5 py-1.5 font-bold text-white transition enabled:hover:brightness-110 disabled:opacity-50'
               type='submit'
