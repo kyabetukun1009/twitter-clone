@@ -61,6 +61,12 @@ const navLinks: Readonly<NavLink[]> = [
     canBeHidden: true
   },
   {
+    href: '/pilgrimage',
+    linkName: '聖地巡礼',
+    iconName: 'MapPinIcon',
+    canBeHidden: true
+  },
+  {
     href: '/lists',
     linkName: 'リスト',
     iconName: 'Bars3BottomLeftIcon',

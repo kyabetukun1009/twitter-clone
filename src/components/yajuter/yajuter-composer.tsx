@@ -63,7 +63,7 @@ export function YajuterComposer({
         reply_to: replyTo,
         image_path
       });
-      onPosted({ ...post, reply_count: 0 });
+      onPosted({ ...post, reply_count: 0, stamps: {} });
       setContent('');
       setEmotionTag('');
       clearImage();

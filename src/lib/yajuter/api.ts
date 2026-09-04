@@ -6,7 +6,10 @@ import type {
   NoticeRow
 } from '@lib/supabase/tables';
 
-export type YPost = PostRow & { reply_count: number };
+export type YPost = PostRow & {
+  reply_count: number;
+  stamps: Record<string, number>;
+};
 
 export type OwnerProfile = UserRow & {
   totalTweets: number;
@@ -73,13 +76,48 @@ export function deletePost(post_id: number): Promise<{ id: number }> {
   return api(`/api/yajuter/posts/${post_id}`, { method: 'DELETE' });
 }
 
-export async function uploadImage(file: File): Promise<{ path: string }> {
+export function editPost(
+  post_id: number,
+  input: { content: string; emotion_tag?: string }
+): Promise<{ post: YPost }> {
+  return api(`/api/yajuter/posts/${post_id}`, {
+    method: 'PUT',
+    body: JSON.stringify(input)
+  });
+}
+
+export function toggleStamp(
+  post_id: number,
+  stamp: string
+): Promise<{ post_id: number; stamps: Record<string, number> }> {
+  return api('/api/yajuter/stamp', {
+    method: 'POST',
+    body: JSON.stringify({ post_id, stamp })
+  });
+}
+
+export function togglePin(
+  post_id: number
+): Promise<{ post_id: number; pinned: boolean }> {
+  return api('/api/yajuter/pin', {
+    method: 'POST',
+    body: JSON.stringify({ post_id })
+  });
+}
+
+export async function uploadImage(
+  file: File,
+  bucket?: 'uploads' | 'pilgrimage'
+): Promise<{ path: string }> {
   const form = new FormData();
   form.append('image', file);
-  const res = await fetch('/api/yajuter/upload', {
-    method: 'POST',
-    body: form
-  });
+  const res = await fetch(
+    `/api/yajuter/upload${bucket ? `?bucket=${bucket}` : ''}`,
+    {
+      method: 'POST',
+      body: form
+    }
+  );
   if (res.status === 401) throw new Error('unauthorized');
   const body = (await res.json()) as { ok: boolean; path?: string };
   if (!body.ok || !body.path) throw new Error('upload failed');
@@ -153,6 +191,52 @@ export function fetchQuotes(params: {
 
 export function fetchNotices(): Promise<{ notices: NoticeRow[] }> {
   return api('/api/yajuter/notices');
+}
+
+export type PilgrimageLog = {
+  id: number;
+  spot_id: number;
+  visited_at: string;
+  digital_only: boolean;
+  memo: string | null;
+  photo_path: string | null;
+  created_at: string;
+  spot: { name: string } | null;
+};
+
+export function fetchPilgrimage(): Promise<{
+  spots: {
+    id: number;
+    name: string;
+    area: string;
+    description: string | null;
+    caution: string;
+  }[];
+  logs: PilgrimageLog[];
+  logCount: number;
+  monthly: Record<string, { count: number; digital: number }>;
+}> {
+  return api('/api/yajuter/pilgrimage');
+}
+
+export function addPilgrimageLog(input: {
+  spot_id: number;
+  visited_at: string;
+  digital_only: boolean;
+  memo?: string;
+  photo_path?: string;
+}): Promise<{ log: PilgrimageLog }> {
+  return api('/api/yajuter/pilgrimage', {
+    method: 'POST',
+    body: JSON.stringify(input)
+  });
+}
+
+export function deletePilgrimageLog(id: number): Promise<{ id: number }> {
+  return api('/api/yajuter/pilgrimage', {
+    method: 'DELETE',
+    body: JSON.stringify({ id })
+  });
 }
 
 export function fetchRandomQuote(): Promise<{ quote: QuoteRow | null }> {

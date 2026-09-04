@@ -14,7 +14,8 @@ const JOBS = [
   ['custom-empty-media-38.png', 'empty-media.png', 800, null],
   ['custom-notification-gold-39.png', 'notices.png', 400, 400],
   ['custom-post-night-window-27.png', 'header-quotes.png', 1200, 400],
-  ['custom-post-stadium-26.png', 'header-anniv.png', 1200, 400]
+  ['custom-post-stadium-26.png', 'header-anniv.png', 1200, 400],
+  ['custom-post-concert-25.png', 'header-pilgrimage.png', 1200, 400]
 ];
 
 for (const [src, dest, w, h] of JOBS) {

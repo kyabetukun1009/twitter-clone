@@ -22,8 +22,8 @@ function extOf(name: string, mime: string): string {
   return 'webp';
 }
 
-// POST /api/yajuter/upload (multipart/form-data, field "image").
-// Stores into the private `uploads` bucket, returns the storage path.
+// POST /api/yajuter/upload?bucket=uploads|pilgrimage (multipart, field "image").
+// Stores into a private bucket, returns the storage path.
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -65,10 +65,11 @@ export default async function handler(
   const ext = extOf(file.originalFilename ?? '', mime);
   const rand = Math.random().toString(36).slice(2, 8);
   const path = `u1-${Date.now()}-${rand}.${ext}`;
+  const bucket = req.query.bucket === 'pilgrimage' ? 'pilgrimage' : 'uploads';
 
   const sb = getServiceClient();
   const buffer = readFileSync(file.filepath);
-  const { error } = await sb.storage.from('uploads').upload(path, buffer, {
+  const { error } = await sb.storage.from(bucket).upload(path, buffer, {
     contentType: mime,
     upsert: false
   });
