@@ -79,6 +79,24 @@ const navLinks: Readonly<NavLink[]> = [
     canBeHidden: true
   },
   {
+    href: '/quiz',
+    linkName: '114514検定',
+    iconName: 'PuzzlePieceIcon',
+    canBeHidden: true
+  },
+  {
+    href: '/archive',
+    linkName: '年表',
+    iconName: 'CalendarDaysIcon',
+    canBeHidden: true
+  },
+  {
+    href: '/review',
+    linkName: '振り返り',
+    iconName: 'NewspaperIcon',
+    canBeHidden: true
+  },
+  {
     href: '/lists',
     linkName: 'リスト',
     iconName: 'Bars3BottomLeftIcon',

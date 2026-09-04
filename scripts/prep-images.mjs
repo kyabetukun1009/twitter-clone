@@ -17,7 +17,10 @@ const JOBS = [
   ['custom-post-stadium-26.png', 'header-anniv.png', 1200, 400],
   ['custom-post-concert-25.png', 'header-pilgrimage.png', 1200, 400],
   ['custom-funny-trophy-33.png', 'header-stats.png', 1200, 400],
-  ['custom-reaction-proud-22.png', 'header-badges.png', 1200, 400]
+  ['custom-reaction-proud-22.png', 'header-badges.png', 1200, 400],
+  ['custom-funny-superhero-30.png', 'header-quiz.png', 1200, 400],
+  ['custom-reaction-penlight-24.png', 'header-review.png', 1200, 400],
+  ['custom-angle-sky-40.png', 'header-archive.png', 1200, 400]
 ];
 
 for (const [src, dest, w, h] of JOBS) {

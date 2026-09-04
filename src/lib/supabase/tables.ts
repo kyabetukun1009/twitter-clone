@@ -106,6 +106,10 @@ export type SettingsRow = {
   theme: string;
   daily_goal: number;
   quiz_best_hard: number;
+  quiz_best: number;
+  quiz_best_number: number;
+  quiz_best_wild: number;
+  quiz_played: number;
 };
 
 export type PostStampRow = {

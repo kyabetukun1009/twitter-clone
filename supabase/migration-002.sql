@@ -1,0 +1,5 @@
+-- Quiz score columns (mirrors PHP settings additions).
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS quiz_best INT NOT NULL DEFAULT 0;
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS quiz_best_number INT NOT NULL DEFAULT 0;
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS quiz_best_wild INT NOT NULL DEFAULT 0;
+ALTER TABLE settings ADD COLUMN IF NOT EXISTS quiz_played INT NOT NULL DEFAULT 0;

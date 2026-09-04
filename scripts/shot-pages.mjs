@@ -14,6 +14,9 @@ const PAGES = [
   { name: 'pilg', path: '/pilgrimage', ready: 'section' },
   { name: 'stats', path: '/stats', ready: 'section' },
   { name: 'badges', path: '/achievements', ready: 'section' },
+  { name: 'quiz', path: '/quiz', ready: 'section' },
+  { name: 'archive', path: '/archive', ready: 'section' },
+  { name: 'review', path: '/review', ready: 'section' },
   { name: 'notfound', path: '/no-such-page', ready: 'text=何もないゾ' }
 ];
 const WIDTHS = [

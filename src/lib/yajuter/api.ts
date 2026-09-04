@@ -233,6 +233,71 @@ export function fetchBadges(): Promise<{
   return api('/api/yajuter/badges');
 }
 
+export type QuizMode = 'normal' | 'number' | 'wild' | 'hard';
+
+export type QuizQuestion = {
+  qid: number;
+  meaning: string | null;
+  usage_note: string | null;
+  source: string | null;
+  answerId: number;
+  answerText: string;
+  options: { id: number; text: string }[];
+};
+
+export type QuizScore = {
+  quiz_best: number;
+  quiz_best_number: number;
+  quiz_best_wild: number;
+  quiz_best_hard: number;
+  quiz_played: number;
+};
+
+export function fetchQuiz(mode: QuizMode): Promise<{
+  mode: QuizMode;
+  total: number;
+  question: QuizQuestion;
+  score: QuizScore;
+}> {
+  return api(`/api/yajuter/quiz?mode=${mode}`);
+}
+
+export function answerQuiz(
+  mode: QuizMode,
+  streak: number
+): Promise<{ streak: number; best: number; score: QuizScore }> {
+  return api('/api/yajuter/quiz', {
+    method: 'POST',
+    body: JSON.stringify({ mode, streak })
+  });
+}
+
+export function fetchArchive(year?: number): Promise<{
+  years: number[];
+  year: number;
+  total: number;
+  months: { m: number; count: number; avg: number | null }[];
+  best3: YPost[];
+  anniversaries: AnniversaryRow[];
+}> {
+  return api(`/api/yajuter/archive${year ? `?y=${year}` : ''}`);
+}
+
+export function fetchReview(year?: number): Promise<{
+  year: number;
+  total: number;
+  maxLikes: number;
+  best: YPost | null;
+  monthly: number[];
+  topWords: { word: string; count: number }[];
+}> {
+  return api(`/api/yajuter/review${year ? `?y=${year}` : ''}`);
+}
+
+export function reviewSvgUrl(year: number): string {
+  return `/api/yajuter/review-svg?y=${year}`;
+}
+
 export type PilgrimageLog = {
   id: number;
   spot_id: number;
