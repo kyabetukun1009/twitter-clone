@@ -11,7 +11,7 @@ export function Placeholder(): JSX.Element {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         className='h-20 w-20 animate-pulse rounded-full'
-        src='/images/yajuter-emblem.png'
+        src='/images/logo.png'
         alt='読み込み中'
       />
     </main>

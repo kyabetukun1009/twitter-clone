@@ -90,7 +90,7 @@ export default function UserProfile(): JSX.Element {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className='h-48 w-full object-cover'
-              src='/images/yajuter-cover.svg'
+              src='/images/cover.png'
               alt='カバー'
             />
           </div>

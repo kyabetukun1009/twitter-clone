@@ -41,7 +41,7 @@ export default function Gate(): JSX.Element {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className='mx-auto h-16 w-16 rounded-full'
-          src='/images/yajuter-emblem.png'
+          src='/images/logo.png'
           alt='yajuter'
         />
         <h1 className='mt-2 text-center text-xl font-bold text-white'>

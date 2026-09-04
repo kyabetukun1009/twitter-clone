@@ -104,7 +104,7 @@ export function Sidebar(): JSX.Element {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className='h-8 w-8 rounded-full'
-                  src='/images/yajuter-emblem.png'
+                  src='/images/logo.png'
                   alt='yajuter'
                 />
               </a>
