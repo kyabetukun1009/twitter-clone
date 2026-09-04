@@ -1,5 +1,6 @@
 import { requireGate } from '@lib/api-auth';
 import { getServiceClient, OWNER_USER_ID } from '@lib/supabase/server';
+import { refreshBadges } from '@lib/supabase/queries';
 import { EMOTION_TAGS, MAX_POST_LEN } from '@lib/supabase/tables';
 import type { Database } from '@lib/supabase/database';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -65,6 +66,9 @@ export default async function handler(
     res.status(500).json({ ok: false, error: error.message });
     return;
   }
+
+  // Badge engine (best-effort, never blocks the response).
+  refreshBadges(sb).catch(() => undefined);
 
   res.status(200).json({ ok: true, post: data });
 }

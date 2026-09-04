@@ -193,6 +193,46 @@ export function fetchNotices(): Promise<{ notices: NoticeRow[] }> {
   return api('/api/yajuter/notices');
 }
 
+export type StatsData = {
+  from: string | null;
+  to: string | null;
+  totals: Record<string, number>;
+  period: { posts: number; chars: number };
+  firstPost: string | null;
+  monthly: { ym: string; count: number }[];
+  hourly: number[];
+  best: YPost[];
+  tags: { tag: string; count: number }[];
+  stamps: { stamp: string; count: number }[];
+};
+
+export function fetchStats(from?: string, to?: string): Promise<StatsData> {
+  const qs = new URLSearchParams();
+  if (from) qs.set('from', from);
+  if (to) qs.set('to', to);
+  const suffix = qs.toString();
+  return api(`/api/yajuter/stats${suffix ? `?${suffix}` : ''}`);
+}
+
+export type BadgeView = {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  icon: string;
+  threshold: number;
+  metric: string;
+  rarity: string | null;
+  unlocked: { unlocked_at: string } | null;
+};
+
+export function fetchBadges(): Promise<{
+  stats: Record<string, number>;
+  badges: BadgeView[];
+}> {
+  return api('/api/yajuter/badges');
+}
+
 export type PilgrimageLog = {
   id: number;
   spot_id: number;

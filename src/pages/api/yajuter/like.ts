@@ -1,5 +1,6 @@
 import { requireGate } from '@lib/api-auth';
 import { getServiceClient, OWNER_USER_ID } from '@lib/supabase/server';
+import { refreshBadges } from '@lib/supabase/queries';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 // POST /api/yajuter/like — いいゾ (mirrors PHP like.php: +1 per tap).
@@ -45,6 +46,8 @@ export default async function handler(
     res.status(500).json({ ok: false, error: error.message });
     return;
   }
+
+  refreshBadges(sb).catch(() => undefined);
 
   res.status(200).json({ ok: true, post: data });
 }

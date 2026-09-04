@@ -11,7 +11,9 @@ const PAGES = [
   { name: 'search', path: '/search?q=%E6%B7%AB%E5%A4%A2', ready: 'article' },
   { name: 'quotes', path: '/quotes', ready: 'text=淫夢語録辞典' },
   { name: 'anniv', path: '/anniversaries', ready: 'section' },
-  { name: 'pilg', path: '/pilgrimage', ready: 'text=聖地巡礼' },
+  { name: 'pilg', path: '/pilgrimage', ready: 'section' },
+  { name: 'stats', path: '/stats', ready: 'section' },
+  { name: 'badges', path: '/achievements', ready: 'section' },
   { name: 'notfound', path: '/no-such-page', ready: 'text=何もないゾ' }
 ];
 const WIDTHS = [

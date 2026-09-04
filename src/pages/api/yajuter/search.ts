@@ -1,6 +1,6 @@
 import { requireGate } from '@lib/api-auth';
 import { getServiceClient, OWNER_USER_ID } from '@lib/supabase/server';
-import { withReplyCounts } from '@lib/supabase/queries';
+import { withReplyCounts, refreshBadges } from '@lib/supabase/queries';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 // GET /api/yajuter/search?q= — LIKE search (mirrors PHP search.php).
@@ -42,6 +42,7 @@ export default async function handler(
   }
 
   await sb.from('search_history').insert({ user_id: OWNER_USER_ID, query: q });
+  refreshBadges(sb).catch(() => undefined);
 
   // Escape PostgREST LIKE wildcards in the keyword.
   const kw = q.replace(/[%_\\]/g, (c) => `\\${c}`);

@@ -62,12 +62,10 @@ export default async function handler(
     }
     const ageSec = (Date.now() - new Date(target.created_at).getTime()) / 1000;
     if (ageSec > 300) {
-      res
-        .status(400)
-        .json({
-          ok: false,
-          error: 'これもうわかんねぇな（編集は投稿から5分以内です）'
-        });
+      res.status(400).json({
+        ok: false,
+        error: 'これもうわかんねぇな（編集は投稿から5分以内です）'
+      });
       return;
     }
 

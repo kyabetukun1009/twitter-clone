@@ -67,6 +67,18 @@ const navLinks: Readonly<NavLink[]> = [
     canBeHidden: true
   },
   {
+    href: '/stats',
+    linkName: '統計',
+    iconName: 'ChartBarIcon',
+    canBeHidden: true
+  },
+  {
+    href: '/achievements',
+    linkName: '実績',
+    iconName: 'TrophyIcon',
+    canBeHidden: true
+  },
+  {
     href: '/lists',
     linkName: 'リスト',
     iconName: 'Bars3BottomLeftIcon',
