@@ -2,7 +2,8 @@ import type {
   PostRow,
   UserRow,
   AnniversaryRow,
-  QuoteRow
+  QuoteRow,
+  NoticeRow
 } from '@lib/supabase/tables';
 
 export type YPost = PostRow & { reply_count: number };
@@ -120,6 +121,38 @@ export function fetchProfile(tab: ProfileTab): Promise<{
   stats: { totalTweets: number; totalPhotos: number };
 }> {
   return api(`/api/yajuter/profile?tab=${tab}`);
+}
+
+export function fetchSearch(q: string): Promise<{
+  q: string;
+  total: number;
+  posts: YPost[];
+  suggests: string[];
+}> {
+  return api(`/api/yajuter/search?q=${encodeURIComponent(q)}`);
+}
+
+export function fetchQuotes(params: {
+  cat?: string;
+  q?: string;
+  sort?: string;
+}): Promise<{
+  cat: string;
+  q: string;
+  sort: string;
+  quotes: QuoteRow[];
+  usage: Record<number, number>;
+}> {
+  const qs = new URLSearchParams();
+  if (params.cat) qs.set('cat', params.cat);
+  if (params.q) qs.set('q', params.q);
+  if (params.sort) qs.set('sort', params.sort);
+  const suffix = qs.toString();
+  return api(`/api/yajuter/quotes${suffix ? `?${suffix}` : ''}`);
+}
+
+export function fetchNotices(): Promise<{ notices: NoticeRow[] }> {
+  return api('/api/yajuter/notices');
 }
 
 export function fetchRandomQuote(): Promise<{ quote: QuoteRow | null }> {

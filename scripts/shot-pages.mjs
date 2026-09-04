@@ -8,6 +8,9 @@ const PAGES = [
   { name: 'profile', path: '/user/watashi', ready: 'text=件の投稿' },
   { name: 'bookmarks', path: '/bookmarks', ready: 'section' },
   { name: 'thread', path: '/tweet/114595', ready: 'article' },
+  { name: 'search', path: '/search?q=%E6%B7%AB%E5%A4%A2', ready: 'article' },
+  { name: 'quotes', path: '/quotes', ready: 'text=淫夢語録辞典' },
+  { name: 'anniv', path: '/anniversaries', ready: 'section' },
   { name: 'notfound', path: '/no-such-page', ready: 'text=何もないゾ' }
 ];
 const WIDTHS = [

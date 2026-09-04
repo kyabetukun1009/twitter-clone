@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
-import { fetchAnniversaries, fetchRandomQuote } from '@lib/yajuter/api';
-import type { AnniversaryRow, QuoteRow } from '@lib/supabase/tables';
+import {
+  fetchAnniversaries,
+  fetchRandomQuote,
+  fetchNotices
+} from '@lib/yajuter/api';
+import type { AnniversaryRow, QuoteRow, NoticeRow } from '@lib/supabase/tables';
 
 function daysUntil(month: number, day: number, now: Date): number {
   const thisYear = new Date(now.getFullYear(), month - 1, day);
@@ -30,6 +34,7 @@ function nextAnniversary(list: AnniversaryRow[]): {
 export function YajuterAside(): JSX.Element {
   const [anniversaries, setAnniversaries] = useState<AnniversaryRow[]>([]);
   const [quote, setQuote] = useState<QuoteRow | null>(null);
+  const [notices, setNotices] = useState<NoticeRow[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,6 +48,11 @@ export function YajuterAside(): JSX.Element {
         if (!cancelled) setQuote(quote);
       })
       .catch(() => undefined);
+    fetchNotices()
+      .then(({ notices }) => {
+        if (!cancelled) setNotices(notices);
+      })
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
@@ -52,6 +62,27 @@ export function YajuterAside(): JSX.Element {
 
   return (
     <>
+      {notices.length > 0 && (
+        <section className='rounded-2xl bg-main-sidebar-background pt-3'>
+          <h2 className='px-4 pb-2 text-xl font-extrabold'>お知らせ</h2>
+          {notices.slice(0, 3).map((notice) => (
+            <div key={notice.id} className='flex gap-2 px-4 py-2'>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className='h-10 w-10 shrink-0 rounded-xl'
+                src='/images/notices.png'
+                alt='お知らせ'
+              />
+              <div className='min-w-0'>
+                <p className='truncate text-sm font-bold'>{notice.title}</p>
+                <p className='truncate text-sm text-light-secondary dark:text-dark-secondary'>
+                  {notice.body}
+                </p>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
       <section className='rounded-2xl bg-main-sidebar-background pt-3'>
         <h2 className='px-4 pb-2 text-xl font-extrabold'>
           記念日カウントダウン

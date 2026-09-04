@@ -25,10 +25,9 @@ const navLinks: Readonly<NavLink[]> = [
     iconName: 'HomeIcon'
   },
   {
-    href: '/explore',
-    linkName: '話題を検索',
+    href: '/search',
+    linkName: '検索',
     iconName: 'HashtagIcon',
-    disabled: true,
     canBeHidden: true
   },
   {
@@ -47,6 +46,18 @@ const navLinks: Readonly<NavLink[]> = [
     href: '/bookmarks',
     linkName: 'お気に入り',
     iconName: 'BookmarkIcon',
+    canBeHidden: true
+  },
+  {
+    href: '/quotes',
+    linkName: '語録辞典',
+    iconName: 'BookOpenIcon',
+    canBeHidden: true
+  },
+  {
+    href: '/anniversaries',
+    linkName: '記念日',
+    iconName: 'CalendarIcon',
     canBeHidden: true
   },
   {
